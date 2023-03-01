@@ -1,15 +1,7 @@
-FROM openjdk:17-jdk-slim
+FROM sbtscala/scala-sbt:eclipse-temurin-17.0.2_1.6.2_2.13.8
 
-RUN apt update -y
-RUN apt install unzip -y
-RUN apt install curl -y
-
-ENV SBT_VERSION 1.8.2
-
-RUN curl -L -o sbt-$SBT_VERSION.zip https://github.com/sbt/sbt/releases/download/v$SBT_VERSION/sbt-$SBT_VERSION.zip
-RUN unzip sbt-$SBT_VERSION.zip -d ops
+RUN git clone https://github.com/dvgniele/unibo-scalable-project.git /br4ve-trave1er
 
 WORKDIR /br4ve-trave1er
 
-ADD . /br4ve-trave1er
-CMD /ops/sbt/bin/sbt run
+CMD sbt run
