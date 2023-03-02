@@ -4,4 +4,4 @@ RUN git clone https://github.com/dvgniele/unibo-scalable-project.git /br4ve-trav
 
 WORKDIR /br4ve-trave1er
 
-CMD sbt run
+ENTRYPOINT ["sbt", "run"]
