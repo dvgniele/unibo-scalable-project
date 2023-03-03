@@ -7,8 +7,9 @@ lazy val root = (project in file("."))
     name := "br4ve-trave1er.asf",
     idePackagePrefix := Some("org.br4ve.trave1er"),
     libraryDependencies ++= Seq(
-      "org.apache.spark" % "spark-core_2.11" % "2.4.8",
-      "org.apache.spark" % "spark-mllib_2.11" % "2.4.8",
+      "org.apache.spark" %% "spark-core" % "3.3.2",
+      "org.apache.spark" %% "spark-sql" % "3.3.2",
+      "org.apache.spark" %% "spark-mllib" % "3.3.2",
       "org.apache.hadoop" % "hadoop-client" % "3.3.2"
     )
   )

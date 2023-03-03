@@ -2,8 +2,8 @@
 
 ## Prerequisites
 
-* JDK 17
-* Scala plugin installed
+* JDK 11
+* Scala plugin installed (2.13.8)
 * [Google SDK](https://cloud.google.com/sdk/docs/install)
 
 # How to deploy the application on Container Registry
