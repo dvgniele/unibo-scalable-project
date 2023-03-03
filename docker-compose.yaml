@@ -1,0 +1,7 @@
+version: "2"
+services:
+  scala:
+    container_name: scala
+    build: ./
+    volumes:
+      - ./dataset:/br4ve-trave1er/dataset

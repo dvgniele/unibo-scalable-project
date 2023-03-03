@@ -13,7 +13,7 @@ ENV HADOOP_HDFS_HOME=$HADOOP_HOME
 ENV YARN_HOME=$HADOOP_HOME
 ENV HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
 ENV PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
-ENV HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/nativ"
+ENV HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
 
 RUN git clone -b dev https://github.com/dvgniele/unibo-scalable-project.git /br4ve-trave1er
 
