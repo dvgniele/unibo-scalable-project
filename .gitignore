@@ -36,3 +36,8 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### BLBL ###
+/dataset/public_training_set_release_2.1.tar
+.bsp/
+/.bsp/
