@@ -1,5 +1,5 @@
 package org.br4ve.trave1er
-package SparkReader
+package sparkreader
 
 import org.apache.hadoop.fs.{FSDataInputStream, FileStatus, FileSystem}
 import org.apache.spark.sql.DataFrame
