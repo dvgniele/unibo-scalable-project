@@ -41,3 +41,5 @@ build/
 /dataset/public_training_set_release_2.1.tar
 .bsp/
 /.bsp/
+/.idea/uiDesigner.xml
+/dataset/
