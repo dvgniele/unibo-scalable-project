@@ -39,4 +39,5 @@ build/
 
 ### BLBL ###
 /dataset/public_training_set_release_2.1.tar
-sbt.json
+.bsp/
+/.bsp/
