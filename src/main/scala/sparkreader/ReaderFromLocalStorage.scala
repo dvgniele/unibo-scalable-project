@@ -13,11 +13,13 @@ import javax.imageio.ImageIO
 class ReaderFromLocalStorage(spark: SparkSession) extends ReaderDataset {
   // Define the string of directories in the dataset
   private val source = s"./dataset/public_training_set_release_2"
+  private val destination = s"./dataset/output"
   private val metadataFile = s"annotations.json"
   private val imagesDirectory = s"images"
   // define the path
   private val imagesDirectoryPath = new Path(source, imagesDirectory)
   private val metadataPath = new Path(source, metadataFile)
+  private val destinationPath = new Path(destination)
   private val fs = FileSystem.get(imagesDirectoryPath.toUri, new Configuration())
 
   //private val fs = FileSystem.get(new Configuration())
@@ -27,10 +29,10 @@ class ReaderFromLocalStorage(spark: SparkSession) extends ReaderDataset {
     .option("inferSchema", value = true)
     .load(metadataPath.toString)
 
-  override def readFile(filename: String): FSDataInputStream = {
-    println("Reading " + filename + " on context " + imagesDirectoryPath.toString)
+  override def readFile(filename: String): DataFrame = {
+    //println("Reading " + filename + " on context " + imagesDirectoryPath.toString)
     val path = new Path(imagesDirectoryPath, filename)
-    fs.open(path)
+    spark.read.format("image").load(path.toString)
   }
 
   override def listDirectoryContents(): Array[FileStatus] = {
@@ -41,5 +43,14 @@ class ReaderFromLocalStorage(spark: SparkSession) extends ReaderDataset {
   override def getImage(inputStream: FSDataInputStream): BufferedImage = {
     val bytes: Array[Byte] = LazyList.continually(inputStream.read()).takeWhile(_ != -1).map(_.toByte).toArray
     ImageIO.read(new ByteArrayInputStream(bytes))
+  }
+
+  override def saveImage(filename: String, data: Array[Byte]): Unit = {
+    if(!fs.exists(destinationPath)) {
+      fs.create(destinationPath)
+    }
+    val destinationFilePath = new Path(destinationPath.toString, filename)
+    val handler = fs.create(destinationFilePath)
+    handler.write(data)
   }
 }

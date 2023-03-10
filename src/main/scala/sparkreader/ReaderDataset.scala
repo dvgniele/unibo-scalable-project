@@ -10,8 +10,9 @@ import javax.imageio.ImageIO
 trait ReaderDataset {
 
   def readFileMetadata: DataFrame
-  def readFile(filename: String): FSDataInputStream
+  def readFile(filename: String): DataFrame
   def listDirectoryContents(): Array[FileStatus];
   def getImage(inputStream: FSDataInputStream): BufferedImage;
+  def saveImage(filename: String, data: Array[Byte]): Unit;
 
 }
