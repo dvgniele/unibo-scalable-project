@@ -5,8 +5,7 @@ import org.apache.spark.ml.clustering.KMeans
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions.{col, collect_list}
-import org.apache.spark.util.SizeEstimator
-import org.br4ve.trave1er.SparkReader.ReaderFromLocalStorage
+import org.br4ve.trave1er.sparkreader.ReaderFromLocalStorage
 
 import java.awt.Color
 import java.awt.image.BufferedImage
