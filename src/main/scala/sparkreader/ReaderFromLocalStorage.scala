@@ -35,9 +35,10 @@ class ReaderFromLocalStorage(spark: SparkSession) extends ReaderDataset {
     spark.read.format("image").load(path.toString)
   }
 
-  override def listDirectoryContents(): Array[FileStatus] = {
+  override def listDirectoryContents(): Array[File] = {
     //val test = fs.listFiles(new Path("."), false)
-    fs.listStatus(imagesDirectoryPath)
+    val directory = new File(imagesDirectoryPath.toString)
+    directory.listFiles()
   }
 
   override def getImage(inputStream: FSDataInputStream): BufferedImage = {

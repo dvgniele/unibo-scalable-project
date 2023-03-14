@@ -2,7 +2,6 @@ package org.br4ve.trave1er
 package utils
 
 import java.awt.image.BufferedImage
-import javax.imageio.ImageIO
 
 object Utils {
 	def image2PixelMatrix(image: BufferedImage): Array[Double] = {
