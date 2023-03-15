@@ -14,6 +14,6 @@ trait ReaderDataset {
   def readFile(filename: String): DataFrame
   def listDirectoryContents(): Array[File]
   def getImage(inputStream: FSDataInputStream): BufferedImage
-  def saveImage(filename: String, data: Array[Byte]): Unit
+  def saveImage(filename: String, data: BufferedImage): Unit
 
 }

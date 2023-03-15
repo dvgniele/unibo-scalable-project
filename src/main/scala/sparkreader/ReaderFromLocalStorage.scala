@@ -7,7 +7,7 @@ import org.apache.hadoop.fs.{FSDataInputStream, FileStatus, FileSystem, Path}
 
 import java.awt.image.BufferedImage
 import java.io.{ByteArrayInputStream, File}
-import java.nio.file.Paths
+import java.nio.file.{Files, Paths}
 import javax.imageio.ImageIO
 
 class ReaderFromLocalStorage(spark: SparkSession) extends ReaderDataset {
@@ -46,12 +46,13 @@ class ReaderFromLocalStorage(spark: SparkSession) extends ReaderDataset {
     ImageIO.read(new ByteArrayInputStream(bytes))
   }
 
-  override def saveImage(filename: String, data: Array[Byte]): Unit = {
-    if(!fs.exists(destinationPath)) {
-      fs.create(destinationPath)
+  override def saveImage(filename: String, data: BufferedImage): Unit = {
+    val completePath = new Path(destination, filename)
+    if(!Files.exists(Paths.get(destinationPath.toString))) {
+      println("creating output folder...")
+      Files.createDirectory(Paths.get(destinationPath.toString))
     }
-    val destinationFilePath = new Path(destinationPath.toString, filename)
-    val handler = fs.create(destinationFilePath)
-    handler.write(data)
+    val newFile = new File(completePath.toString)
+    ImageIO.write(data, "jpg", newFile)
   }
 }

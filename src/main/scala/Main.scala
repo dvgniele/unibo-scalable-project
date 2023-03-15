@@ -53,7 +53,7 @@ object Main {
       val prediction = model.transformData(pp_image, fitted)
       val image = model.getSegmentedImage(prediction, pp_width, pp_height)
 
-      ImageIO.write(image, "jpg", new File("dataset/output/" + file.getName))
+      reader.saveImage(file.getName, image)
 
       //train_set = train_set :+ pp_df
     })
