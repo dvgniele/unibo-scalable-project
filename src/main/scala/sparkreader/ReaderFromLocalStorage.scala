@@ -10,15 +10,15 @@ import java.io.{ByteArrayInputStream, File}
 import java.nio.file.{Files, Paths}
 import javax.imageio.ImageIO
 
-class ReaderFromLocalStorage(spark: SparkSession) extends ReaderDataset {
+class ReaderFromLocalStorage(spark: SparkSession, path: String) extends ReaderDataset {
   // Define the string of directories in the dataset
-  private val source = s"./dataset/public_training_set_release_2"
+  //private val source = s"./dataset/public_training_set_release_2"
   private val destination = s"./dataset/output"
   private val metadataFile = s"annotations.json"
   private val imagesDirectory = s"images"
   // define the path
-  private val imagesDirectoryPath = new Path(source, imagesDirectory)
-  private val metadataPath = new Path(source, metadataFile)
+  private val imagesDirectoryPath = new Path(path, imagesDirectory)
+  private val metadataPath = new Path(path, metadataFile)
   private val destinationPath = new Path(destination)
   private val fs = FileSystem.get(imagesDirectoryPath.toUri, new Configuration())
 
