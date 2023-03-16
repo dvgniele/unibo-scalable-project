@@ -2,6 +2,7 @@ package org.br4ve.trave1er
 
 import org.apache.spark.ml.feature.VectorAssembler
 import org.apache.spark.ml.clustering.KMeans
+import org.apache.spark.ml.linalg.SQLDataTypes.VectorType
 import org.apache.spark.mllib.linalg.VectorUDT
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
@@ -32,23 +33,9 @@ object Main {
 
 		//  reading all files in dataset directory
 		val files_list = reader.listDirectoryContents()
-		//  print of filenames (in parallel exec)
-		//files_list.par.foreach(file => println(file.getName))
 
 		val k = 3
 		val model = new ImageSegmentation(k)
-
-		/*
-		val features_array = spark.sparkContext.parallelize(files_list)
-			.map(
-				file => {
-					val image_df = reader.readFile(file.getName)
-					println("Starting segmentation on file: " + file.getName)
-
-					//val pp_image = new ImagePreprocessingUtils(image_df, spark)
-					PreprocessedImage.decodeImageDataFrame(spark, image_df)
-				})
-		 */
 
 		var train_set = List.empty[(DataFrame, Int, Int)]
 
@@ -61,51 +48,11 @@ object Main {
 			train_set = train_set :+ pp_tuple
 		})
 
-
-		// Define the schema for the DataFrame
-		/*
-		val schema = StructType(Seq(
-			StructField("features", ArrayType(StringType))
-		))
-		 */
-
-		var schema: StructType = null
-
-		/*
-		val rdd = train_set.map(item => {
-			print("bl")
-			if (schema == null) {
-				schema = item._1.schema
-				println("DEFINITOOOOOOOOOO")
-				println("DEFINITOOOOOOOOOO")
-				println("DEFINITOOOOOOOOOO")
-			}
-			Row(item._1)
-		})
-
-		 */
-
-		/*
-		val rdd = spark.sparkContext.parallelize(train_set).map(item => {
-			if (schema == null) {
-				schema = item._1.schema
-			}
-			Row(item._1)
-		}
-		).collect()
-
-		 */
-
 		val rows = train_set.map(item => {
-			if (schema == null) {
-				schema = item._1.schema
-			}
-			Row(item._1)
+			item._1
 		})
 
-		val rdd = spark.sparkContext.parallelize(rows)
-
-		val df = spark.createDataFrame(rdd, schema)
+		val df = rows.reduce(_ unionAll _)
 
 		val properties = spark.sparkContext.parallelize(train_set).map { item =>
 			Row.fromTuple((item._2, item._3))
@@ -132,19 +79,6 @@ object Main {
 
 			reader_test.saveImage(file.getName, image)
 		})
-
-
-
-		//val testa = train_set.head
-		//val fitted = model.modelFit(testa)
-
-		//val prediction = model.transformData(testa, fitted)
-
-		//val image = model.getSegmentedImage(prediction, prediction.select("w")., prediction.select("h"))
-
-
-
-		return
 
 	}
 }
