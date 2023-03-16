@@ -3,7 +3,6 @@ package org.br4ve.trave1er.segmentation
 import org.apache.spark.ml.clustering.{KMeans, KMeansModel}
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.col
-import org.br4ve.trave1er.segmentation.IImageSegmentation
 
 import java.awt.Color
 import java.awt.image.BufferedImage
