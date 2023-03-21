@@ -1,23 +1,11 @@
 package org.br4ve.trave1er
 
-import org.apache.spark.ml.feature.VectorAssembler
-import org.apache.spark.ml.clustering.KMeans
-import org.apache.spark.ml.linalg.SQLDataTypes.VectorType
-import org.apache.spark.mllib.linalg.VectorUDT
-import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.{DataFrame, Dataset, Row, SparkSession}
-import org.apache.spark.sql.functions.{col, collect_list}
-import org.apache.spark.sql.types.{ArrayType, DoubleType, FloatType, IntegerType, StringType, StructField, StructType}
-import org.br4ve.trave1er.Preprocessing.{ImagePreprocessingUtils, PreprocessedImage}
-import org.br4ve.trave1er.sparkreader.ReaderFromLocalStorage
-import org.br4ve.trave1er.segmentation.ImageSegmentation
+import Preprocessing.PreprocessedImage
+import segmentation.ImageSegmentation
+import sparkreader.ReaderFromLocalStorage
 
-import java.awt.Color
-import java.awt.image.BufferedImage
-import java.io.File
-import java.util
-import javax.imageio.ImageIO
-import scala.collection.mutable.WrappedArray
+import org.apache.spark.sql.{Row, SparkSession}
+
 import scala.collection.parallel.CollectionConverters.ArrayIsParallelizable
 
 object Main {
@@ -37,15 +25,12 @@ object Main {
 		val k = 3
 		val model = new ImageSegmentation(k)
 
-		var train_set = List.empty[(DataFrame, Int, Int)]
-
-		files_list.par.foreach(file => {
+		val train_set = files_list.par.map(file => {
 			val image_df = reader.readFile(file.getName)
 			println("Starting segmentation on file: " + file.getName)
 
 			val pp_tuple = PreprocessedImage.decodeImageDataFrame(spark, image_df)
-
-			train_set = train_set :+ pp_tuple
+			pp_tuple
 		})
 
 		val rows = train_set.map(item => {
@@ -54,7 +39,7 @@ object Main {
 
 		val df = rows.reduce(_ unionAll _)
 
-		val properties = spark.sparkContext.parallelize(train_set).map { item =>
+		val properties = train_set.map { item =>
 			Row.fromTuple((item._2, item._3))
 		}
 
