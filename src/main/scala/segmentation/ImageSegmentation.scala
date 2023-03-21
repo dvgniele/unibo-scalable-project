@@ -19,7 +19,7 @@ class ImageSegmentation(k: Int = 17) extends IImageSegmentation{
 
 	def transformData(data: DataFrame, model: KMeansModel): DataFrame = {
 		model.transform(data)
-			.select("w", "h", "b", "g", "r", "prediction")
+			.select("w", "h", "b", "g", "r", "features", "prediction")
 	}
 
 	def getSegmentedImage(data: DataFrame, width: Int, height: Int): BufferedImage = {

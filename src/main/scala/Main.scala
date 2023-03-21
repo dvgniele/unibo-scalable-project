@@ -5,9 +5,8 @@ import segmentation.ImageSegmentation
 import sparkreader.ReaderFromLocalStorage
 
 import breeze.linalg.*
-import org.apache.spark.sql.functions.avg
+import org.apache.spark.sql.functions.{avg, col}
 import org.apache.spark.sql.Row
-
 import org.apache.spark.ml.linalg.{Vector, Vectors}
 
 import scala.collection.parallel.CollectionConverters.ArrayIsParallelizable
@@ -15,7 +14,7 @@ import scala.collection.parallel.CollectionConverters.ArrayIsParallelizable
 object Main {
 	def main(args: Array[String]): Unit = {
 		
-		val reader = new ReaderFromLocalStorage("./dataset/testino/train")
+		val reader = new ReaderFromLocalStorage("./dataset/testino/")
 		
 		//  reading all files in dataset directory
 		val files_list = reader.listDirectoryContents()
@@ -60,8 +59,11 @@ object Main {
 			val prediction = model.transformData(pp_image, fitted)
 			val image = model.getSegmentedImage(prediction, pp_width, pp_height)
 			
-			val centroids = prediction.groupBy("prediction").agg(avg("features")).collect().map(_.getAs[Vector](0))
-			val data = prediction.select("features").rdd.map(_.getAs[Vector](0)).collect()
+			val centroids = prediction.groupBy("prediction").agg(
+				avg(col("r")).as("r"),
+				avg(col("g")).as("g"),
+				avg(col("b")).as("b")).collect().map(row => Vectors.dense(math.round(row.getDouble(1)), math.round(row.getDouble(2)), math.round(row.getDouble(3))))
+			val data =  prediction.select("r", "g", "b").rdd.map(row => Vectors.dense(row.getInt(0), row.getInt(1), row.getInt(2))).collect()
 			val clusterAssignments = prediction.select("prediction").rdd.map(_.getInt(0)).collect()
 			var sse = 0.0
 			for (i <- data.indices) {
