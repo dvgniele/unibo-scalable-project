@@ -44,3 +44,4 @@ build/
 /.idea/uiDesigner.xml
 /dataset/
 .idea/
+\.idea\codeStyles
