@@ -4,13 +4,19 @@ import org.apache.hadoop.conf
 import org.apache.hadoop.conf.Configuration
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.hadoop.fs.{FSDataInputStream, FileStatus, FileSystem, Path}
+import org.apache.spark.SparkContext
 
 import java.awt.image.BufferedImage
 import java.io.{ByteArrayInputStream, File}
 import java.nio.file.{Files, Paths}
 import javax.imageio.ImageIO
 
-class ReaderFromLocalStorage(spark: SparkSession, path: String) extends ReaderDataset {
+class ReaderFromLocalStorage(path: String) extends ReaderDataset {
+  private val spark = SparkSession.builder()
+    .appName("ReadJsonFile")
+    .master("local[*]")
+    .getOrCreate()
+
   // Define the string of directories in the dataset
   //private val source = s"./dataset/public_training_set_release_2"
   private val destination = s"./dataset/output"
@@ -55,4 +61,8 @@ class ReaderFromLocalStorage(spark: SparkSession, path: String) extends ReaderDa
     val newFile = new File(completePath.toString)
     ImageIO.write(data, "jpg", newFile)
   }
+
+  override def getSpark(): SparkSession = spark
+
+  override def getSparkContext(): SparkContext = spark.sparkContext
 }
