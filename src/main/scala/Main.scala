@@ -14,71 +14,70 @@ import scala.collection.parallel.CollectionConverters.ArrayIsParallelizable
 
 object Main {
 	def main(args: Array[String]): Unit = {
-
-		val reader = new ReaderFromLocalStorage("./dataset/testino")
-
+		
+		val reader = new ReaderFromLocalStorage("./dataset/testino/train")
+		
 		//  reading all files in dataset directory
 		val files_list = reader.listDirectoryContents()
-
+		
 		val k = 3
 		val model = new ImageSegmentation(k)
-
+		
 		val train_set = files_list.par.map(file => {
 			val image_df = reader.readFile(file.getName)
 			println("Starting segmentation on file: " + file.getName)
-
+			
 			val pp_tuple = PreprocessedImage.decodeImageDataFrame(reader.getSpark(), image_df)
 			pp_tuple
 		})
-
+		
 		val rows = train_set.map(item => {
 			item._1
 		})
-
+		
 		val df = rows.reduce(_ unionAll _)
-
+		
 		val properties = train_set.map { item =>
 			Row.fromTuple((item._2, item._3))
 		}
-
+		
 		val fitted = model.modelFit(df)
-
+		
 		val reader_test = new ReaderFromLocalStorage("./dataset/testino/test")
-
+		
 		val test_files_list = reader_test.listDirectoryContents()
 		test_files_list.par.foreach(file => {
 			val image_df = reader_test.readFile(file.getName)
 			println("Starting segmentation on file: " + file.getName)
-
+			
 			val pp_tuple = PreprocessedImage.decodeImageDataFrame(reader_test.getSpark(), image_df)
-
+			
 			val pp_image = pp_tuple._1
 			val pp_width = pp_tuple._2
 			val pp_height = pp_tuple._3
-
+			
 			println("Predicting image: " + file.getName)
 			val prediction = model.transformData(pp_image, fitted)
 			val image = model.getSegmentedImage(prediction, pp_width, pp_height)
-
+			
 			val centroids = prediction.groupBy("prediction").agg(avg("features")).collect().map(_.getAs[Vector](0))
 			val data = prediction.select("features").rdd.map(_.getAs[Vector](0)).collect()
 			val clusterAssignments = prediction.select("prediction").rdd.map(_.getInt(0)).collect()
 			var sse = 0.0
-			for (i <- data.indices)
-			{
+			for (i <- data.indices) {
 				val point = data(i)
 				val centroid = centroids(clusterAssignments(i))
 				val distance = computeDistance(point, centroid)
 				sse += distance * distance
 			}
 			println(s"SSE value: $sse")
-
+			
 			def computeDistance(v1: Vector, v2: Vector): Double = {
 				math.sqrt(Vectors.sqdist(v1, v2))
 			}
-
+			
 			reader_test.saveImage(file.getName, image)
 		})
-
+		
 	}
 }

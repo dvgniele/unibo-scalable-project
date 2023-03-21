@@ -43,3 +43,4 @@ build/
 /.bsp/
 /.idea/uiDesigner.xml
 /dataset/
+.idea/
