@@ -11,7 +11,7 @@ import java.io.{ByteArrayInputStream, File}
 import java.nio.file.{Files, Paths}
 import javax.imageio.ImageIO
 
-class ReaderFromLocalStorage(path: String) extends ReaderDataset {
+class ReaderFromLocalStorage(path: String) /*extends ReaderDataset*/ {
   private val spark = SparkSession.builder()
     .appName("ReadJsonFile")
     .master("local[*]")
@@ -29,30 +29,30 @@ class ReaderFromLocalStorage(path: String) extends ReaderDataset {
   private val fs = FileSystem.get(imagesDirectoryPath.toUri, new Configuration())
 
   //private val fs = FileSystem.get(new Configuration())
-  override def readFileMetadata: DataFrame = spark.read
+  def readFileMetadata: DataFrame = spark.read
     .format("json")
     .option("multiLine", value = true)
     .option("inferSchema", value = true)
     .load(metadataPath.toString)
 
-  override def readFile(filename: String): DataFrame = {
+  def readFile(filename: String): DataFrame = {
     //println("Reading " + filename + " on context " + imagesDirectoryPath.toString)
     val path = new Path(imagesDirectoryPath, filename)
     spark.read.format("image").load(path.toString)
   }
 
-  override def listDirectoryContents(): Array[File] = {
+  def listDirectoryContents(): Array[File] = {
     //val test = fs.listFiles(new Path("."), false)
     val directory = new File(imagesDirectoryPath.toString)
     directory.listFiles()
   }
 
-  override def getImage(inputStream: FSDataInputStream): BufferedImage = {
+  def getImage(inputStream: FSDataInputStream): BufferedImage = {
     val bytes: Array[Byte] = LazyList.continually(inputStream.read()).takeWhile(_ != -1).map(_.toByte).toArray
     ImageIO.read(new ByteArrayInputStream(bytes))
   }
 
-  override def saveImage(filename: String, data: BufferedImage): Unit = {
+  def saveImage(filename: String, data: BufferedImage): Unit = {
     val completePath = new Path(destination, filename)
     if(!Files.exists(Paths.get(destinationPath.toString))) {
       println("creating output folder...")
@@ -62,7 +62,7 @@ class ReaderFromLocalStorage(path: String) extends ReaderDataset {
     ImageIO.write(data, "jpg", newFile)
   }
 
-  override def getSpark(): SparkSession = spark
+  def getSpark(): SparkSession = spark
 
-  override def getSparkContext(): SparkContext = spark.sparkContext
+  def getSparkContext(): SparkContext = spark.sparkContext
 }

@@ -2,7 +2,7 @@ package org.br4ve.trave1er
 
 import Preprocessing.PreprocessedImage
 import segmentation.ImageSegmentation
-import sparkreader.ReaderFromLocalStorage
+import sparkreader.{ReaderFromGoogleCloudStorage, ReaderFromLocalStorage}
 
 import breeze.linalg.*
 import org.apache.spark.sql.functions.{avg, col}
@@ -14,7 +14,7 @@ import scala.collection.parallel.CollectionConverters.ArrayIsParallelizable
 object Main {
 	def main(args: Array[String]): Unit = {
 		
-		val reader = new ReaderFromLocalStorage("./dataset/testino/")
+		val reader = new ReaderFromGoogleCloudStorage("train")
 		
 		//  reading all files in dataset directory
 		val files_list = reader.listDirectoryContents()
@@ -22,7 +22,7 @@ object Main {
 		val k = 3
 		val model = new ImageSegmentation(k)
 		
-		val train_set = files_list.par.map(file => {
+		/*val train_set = files_list.par.map(file => {
 			val image_df = reader.readFile(file.getName)
 			println("Starting segmentation on file: " + file.getName)
 			
@@ -42,7 +42,7 @@ object Main {
 		
 		val fitted = model.modelFit(df)
 		
-		val reader_test = new ReaderFromLocalStorage("./dataset/testino/test")
+		val reader_test = new ReaderFromGoogleCloudStorage("test")
 		
 		val test_files_list = reader_test.listDirectoryContents()
 		test_files_list.par.foreach(file => {
@@ -79,7 +79,7 @@ object Main {
 			}
 			
 			reader_test.saveImage(file.getName, image)
-		})
+		})*/
 		
 	}
 }
