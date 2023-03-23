@@ -14,7 +14,7 @@ import javax.imageio.ImageIO
 trait ReaderDataset {
   def readFileMetadata: DataFrame
   def readFile(filename: String): DataFrame
-  def listDirectoryContents(): RDD[(String, PortableDataStream)];
+  def listDirectoryContents(): Array[FileStatus];
   def getImage(inputStream: FSDataInputStream): BufferedImage
   def saveImage(filename: String, data: BufferedImage): Unit
   def getSpark(): SparkSession

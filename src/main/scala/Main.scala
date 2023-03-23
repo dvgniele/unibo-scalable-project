@@ -9,6 +9,7 @@ import org.apache.spark.sql.functions.{avg, col}
 import org.apache.spark.sql.Row
 import org.apache.spark.ml.linalg.{Vector, Vectors}
 
+import java.io.File
 import scala.collection.parallel.CollectionConverters.ArrayIsParallelizable
 
 object Main {
@@ -17,19 +18,20 @@ object Main {
 		val reader = new ReaderFromGoogleCloudStorage("train")
 		
 		//  reading all files in dataset directory
-		val files_list = reader.listDirectoryContents()
-		
+		val files_list_df = reader.listDirectoryContents()
+		//val files_list_rdd = files_list_df.rdd
 		val k = 3
 		val model = new ImageSegmentation(k)
 		
-		/*val train_set = files_list.par.map(file => {
-			val image_df = reader.readFile(file.getName)
-			println("Starting segmentation on file: " + file.getName)
-			
+		val train_set = files_list_df.par.map(file => {
+			val completePath = file.getPath
+			val fileHandler = new File(completePath.toString)
+			println("Starting segmentation on file: " + fileHandler.getName)
+			val image_df = reader.readFile(fileHandler.getName)
 			val pp_tuple = PreprocessedImage.decodeImageDataFrame(reader.getSpark(), image_df)
 			pp_tuple
 		})
-		
+
 		val rows = train_set.map(item => {
 			item._1
 		})
@@ -46,8 +48,10 @@ object Main {
 		
 		val test_files_list = reader_test.listDirectoryContents()
 		test_files_list.par.foreach(file => {
-			val image_df = reader_test.readFile(file.getName)
-			println("Starting segmentation on file: " + file.getName)
+			val completePath = file.getPath
+			val fileHandler = new File(completePath.toString)
+			val image_df = reader_test.readFile(fileHandler.getName)
+			println("Starting segmentation on file: " + fileHandler.getName)
 			
 			val pp_tuple = PreprocessedImage.decodeImageDataFrame(reader_test.getSpark(), image_df)
 			
@@ -55,7 +59,7 @@ object Main {
 			val pp_width = pp_tuple._2
 			val pp_height = pp_tuple._3
 			
-			println("Predicting image: " + file.getName)
+			println("Predicting image: " + fileHandler.getName)
 			val prediction = model.transformData(pp_image, fitted)
 			val image = model.getSegmentedImage(prediction, pp_width, pp_height)
 			
@@ -78,8 +82,8 @@ object Main {
 				math.sqrt(Vectors.sqdist(v1, v2))
 			}
 			
-			reader_test.saveImage(file.getName, image)
-		})*/
+			reader_test.saveImage(fileHandler.getName, image)
+		})
 		
 	}
 }
