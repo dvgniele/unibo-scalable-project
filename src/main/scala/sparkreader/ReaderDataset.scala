@@ -15,7 +15,6 @@ trait ReaderDataset {
   def readFileMetadata: DataFrame
   def readFile(filename: String): DataFrame
   def listDirectoryContents(): Array[FileStatus];
-  def getImage(inputStream: FSDataInputStream): BufferedImage
   def saveImage(filename: String, data: BufferedImage): Unit
   def getSpark(): SparkSession
   def getSparkContext(): SparkContext
