@@ -5,3 +5,4 @@ services:
     build: ./
     volumes:
       - ./dataset:/br4ve-trave1er/dataset
+      - ./config/helloworld-379211-1a6eefa37a81.json:/config/helloworld-379211-1a6eefa37a81.json
