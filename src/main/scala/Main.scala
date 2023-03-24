@@ -2,20 +2,24 @@ package org.br4ve.trave1er
 
 import Preprocessing.PreprocessedImage
 import segmentation.ImageSegmentation
-import sparkreader.{ReaderFromGoogleCloudStorage, ReaderFromLocalStorage}
+import sparkreader.ReaderFromSource
 
 import breeze.linalg.*
 import org.apache.spark.sql.functions.{avg, col}
 import org.apache.spark.sql.Row
 import org.apache.spark.ml.linalg.{Vector, Vectors}
+import org.br4ve.trave1er.hadoopConfigurationBuilder.HadoopConfigurationBuilder
 
+import java.awt.image.BufferedImage
 import java.io.File
 import scala.collection.parallel.CollectionConverters.ArrayIsParallelizable
+import scala.collection.parallel.mutable.ParArray
 
 object Main {
 	def main(args: Array[String]): Unit = {
 		
-		val reader = new ReaderFromGoogleCloudStorage("train")
+		//val reader = new ReaderFromGoogleCloudStorage("train")
+		val reader = new ReaderFromSource(HadoopConfigurationBuilder.getRemoteSource, HadoopConfigurationBuilder.getHadoopConfigurationForGoogleCloudPlatform, "train")
 		
 		//  reading all files in dataset directory
 		val files_list_df = reader.listDirectoryContents()
@@ -44,10 +48,11 @@ object Main {
 		
 		val fitted = model.modelFit(df)
 		
-		val reader_test = new ReaderFromGoogleCloudStorage("test")
+		//val reader_test = new ReaderFromGoogleCloudStorage("test")
+		val reader_test = new ReaderFromSource(HadoopConfigurationBuilder.getRemoteSource, HadoopConfigurationBuilder.getHadoopConfigurationForGoogleCloudPlatform, "test")
 		
 		val test_files_list = reader_test.listDirectoryContents()
-		test_files_list.par.foreach(file => {
+		test_files_list.par.map(file => {
 			val completePath = file.getPath
 			val fileHandler = new File(completePath.toString)
 			val image_df = reader_test.readFile(fileHandler.getName)
@@ -61,7 +66,7 @@ object Main {
 			
 			println("Predicting image: " + fileHandler.getName)
 			val prediction = model.transformData(pp_image, fitted)
-			val image = model.getSegmentedImage(prediction, pp_width, pp_height)
+			val image: BufferedImage = model.getSegmentedImage(prediction, pp_width, pp_height)
 			
 			val centroids = prediction.groupBy("prediction").agg(
 				avg(col("r")).as("r"),
@@ -81,9 +86,9 @@ object Main {
 			def computeDistance(v1: Vector, v2: Vector): Double = {
 				math.sqrt(Vectors.sqdist(v1, v2))
 			}
-			
 			reader_test.saveImage(fileHandler.getName, image)
+			(fileHandler.getName, image: BufferedImage
+			)
 		})
-		
 	}
 }
