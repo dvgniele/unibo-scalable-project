@@ -19,18 +19,14 @@ lazy val root = (project in file("."))
       "com.google.cloud.bigdataoss" % "gcs-connector" % "1.9.4-hadoop3",
       "com.google.cloud" % "google-cloud-storage" % "2.20.1"
     ),
-    assemblyMergeStrategy in Test := {
-      case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
-      case x =>
-        val oldStrategy = (assemblyMergeStrategy in assembly).value
-        oldStrategy(x)
-    },
-    /*assemblyMergeStrategy := {
-      case "plugin.properties" => MergeStrategy.last
-      case "log4j.properties" => MergeStrategy.last
-      case PathList("META-INF", "log4j-provider.properties") => MergeStrategy.concat
-      case PathList("META-INF", xs@_*) => MergeStrategy.discard
+    assemblyMergeStrategy in assembly := {
+      case m if m.toLowerCase.endsWith("manifest.mf") => MergeStrategy.discard
+      case m if m.toLowerCase.matches("meta-inf.*\\.sf$") => MergeStrategy.discard
+      case "log4j.properties" => MergeStrategy.discard
+      case m if m.toLowerCase.startsWith("meta-inf/services/") => MergeStrategy.filterDistinctLines
+      case "reference.conf" => MergeStrategy.concat
+      case m if m.startsWith("config/") => MergeStrategy.rename
       case _ => MergeStrategy.first
-    },*/
+    },
     assemblyJarName := "my-application.jar"
   )

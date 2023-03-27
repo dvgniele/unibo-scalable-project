@@ -1,4 +1,5 @@
-package org.br4ve.trave1er.segmentation
+package org.br4ve.trave1er
+package segmentation
 
 import org.apache.spark.ml.clustering.{KMeans, KMeansModel}
 import org.apache.spark.sql.DataFrame

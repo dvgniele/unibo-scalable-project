@@ -1,19 +1,17 @@
 package org.br4ve.trave1er
 
 import Preprocessing.PreprocessedImage
+import hadoopConfigurationBuilder.HadoopConfigurationBuilder
 import segmentation.ImageSegmentation
 import sparkreader.ReaderFromSource
 
-import breeze.linalg.*
-import org.apache.spark.sql.functions.{avg, col}
-import org.apache.spark.sql.Row
 import org.apache.spark.ml.linalg.{Vector, Vectors}
-import org.br4ve.trave1er.hadoopConfigurationBuilder.HadoopConfigurationBuilder
+import org.apache.spark.sql.Row
+import org.apache.spark.sql.functions.{avg, col}
 
 import java.awt.image.BufferedImage
 import java.io.File
 import scala.collection.parallel.CollectionConverters.ArrayIsParallelizable
-import scala.collection.parallel.mutable.ParArray
 
 object Main {
 	def main(args: Array[String]): Unit = {

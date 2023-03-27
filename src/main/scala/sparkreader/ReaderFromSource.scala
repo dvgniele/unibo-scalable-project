@@ -1,19 +1,12 @@
 package org.br4ve.trave1er
 package sparkreader
 import org.apache.hadoop.conf.Configuration
-import org.apache.hadoop.fs.{FSDataInputStream, FileStatus, FileSystem, Path}
-import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.input.PortableDataStream
-import org.apache.spark.rdd.RDD
+import org.apache.hadoop.fs.{FileStatus, FileSystem, Path}
 import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.{SparkConf, SparkContext}
 
 import java.awt.image.BufferedImage
-import java.io.{ByteArrayInputStream, File}
-import java.nio.file.{Files, Paths}
-//import java.io.{ByteArrayInputStream, File}
-//import java.nio.file.{Files, Paths}
 import javax.imageio.ImageIO
-import scala.io.Source
 
 class ReaderFromSource(rootSource: String, hadoopConfiguration: Configuration, path: String) extends ReaderDataset {
 
