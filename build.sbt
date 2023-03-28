@@ -2,8 +2,8 @@ ThisBuild / version := "0.1.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "2.13.8"
 
-val extraFiles = taskKey[Seq[(File, String)]]("Extra files to include in the jar")
-extraFiles := Seq((baseDirectory.value / "config", "/"))
+//Compile / unmanagedResourceDirectories += { baseDirectory.value / "src" / "main" / "resources" }
+Compile / unmanagedResources / includeFilter := "*.json"
 
 lazy val root = (project in file("."))
   .settings(
@@ -25,7 +25,7 @@ lazy val root = (project in file("."))
       case "log4j.properties" => MergeStrategy.discard
       case m if m.toLowerCase.startsWith("meta-inf/services/") => MergeStrategy.filterDistinctLines
       case "reference.conf" => MergeStrategy.concat
-      case m if m.startsWith("config/") => MergeStrategy.rename
+      case x if x.endsWith(".json") => MergeStrategy.last
       case _ => MergeStrategy.first
     },
     assemblyJarName := "my-application.jar"
