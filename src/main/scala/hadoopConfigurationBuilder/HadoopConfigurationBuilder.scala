@@ -9,7 +9,7 @@ object HadoopConfigurationBuilder {
   private val localSource = s"./dataset/dataset"
 
   def getHadoopConfigurationForGoogleCloudPlatform: Configuration = {
-    val jsonKeyFilePath = getClass.getClassLoader.getResource("helloworld-379211-1a6eefa37a81.json").getPath
+    val jsonKeyFilePath = "/home/notty/config/helloworld-379211-1a6eefa37a81.json"
     val hadoopConfiguration = new Configuration()
     hadoopConfiguration.set("fs.AbstractFileSystem.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS")
     hadoopConfiguration.set("fs.gs.project.id", "helloworld-379211")
