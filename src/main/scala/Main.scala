@@ -11,7 +11,6 @@ import org.apache.spark.sql.functions.{avg, col}
 
 import java.awt.image.BufferedImage
 import java.io.File
-import scala.collection.parallel.CollectionConverters.ArrayIsParallelizable
 
 object Main {
 	def main(args: Array[String]): Unit = {
