@@ -21,7 +21,6 @@ class ReaderFromSource(rootSource: String, hadoopConfiguration: Configuration, p
   private val sparkConf = new SparkConf()
     .setAppName("SparkGCP")
     .setMaster("local[*]")
-    .set("spark.jars.packages", "Microsoft:spark-images:0.1")
 
   private val iterator = hadoopConfiguration.iterator()
   while(iterator.hasNext) {
