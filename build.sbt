@@ -9,11 +9,11 @@ lazy val root = (project in file("."))
     resolvers += "Spark Packages Repo" at "https://repos.spark-packages.org/",
     libraryDependencies ++= Seq(
       "org.scala-lang" % "scala-library" % "2.12.14",
-      "org.apache.spark" %% "spark-core" % "3.3.2",
-      "org.apache.spark" %% "spark-sql" % "3.3.2",
-      "org.apache.spark" %% "spark-mllib" % "3.3.2",
+      "org.apache.spark" %% "spark-core" % "3.3.0",
+      "org.apache.spark" %% "spark-sql" % "3.3.0",
+      "org.apache.spark" %% "spark-mllib" % "3.3.0",
       // already downloaded by gcs-connector but to verify
-      "org.apache.hadoop" % "hadoop-common" % "3.3.2",
+      "org.apache.hadoop" % "hadoop-common" % "3.3.0",
       "com.google.cloud.bigdataoss" % "gcs-connector" % "hadoop3-2.2.10",
       "com.google.cloud.spark" %% "spark-bigquery-with-dependencies" % "0.29.0",
       "Microsoft" % "spark-images" % "0.1"
