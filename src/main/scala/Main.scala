@@ -1,35 +1,38 @@
 package org.br4ve.trave1er
 
 import Preprocessing.PreprocessedImage
+import hadoopConfigurationBuilder.HadoopConfigurationBuilder
 import segmentation.ImageSegmentation
-import sparkreader.ReaderFromLocalStorage
+import sparkreader.ReaderFromSource
 
-import breeze.linalg.*
-import org.apache.spark.sql.functions.{avg, col}
-import org.apache.spark.sql.Row
 import org.apache.spark.ml.linalg.{Vector, Vectors}
+import org.apache.spark.sql.Row
+import org.apache.spark.sql.functions.{avg, col}
 
-import scala.collection.parallel.CollectionConverters.ArrayIsParallelizable
+import java.awt.image.BufferedImage
+import java.io.File
 
 object Main {
 	def main(args: Array[String]): Unit = {
 		
-		val reader = new ReaderFromLocalStorage("./dataset/testino/")
+		//val reader = new ReaderFromGoogleCloudStorage("train")
+		val reader = new ReaderFromSource(HadoopConfigurationBuilder.getRemoteSource, HadoopConfigurationBuilder.getHadoopConfigurationForGoogleCloudPlatform, "train")
 		
 		//  reading all files in dataset directory
-		val files_list = reader.listDirectoryContents()
-		
+		val files_list_df = reader.listDirectoryContents()
+		//val files_list_rdd = files_list_df.rdd
 		val k = 3
 		val model = new ImageSegmentation(k)
 		
-		val train_set = files_list.par.map(file => {
-			val image_df = reader.readFile(file.getName)
-			println("Starting segmentation on file: " + file.getName)
-			
+		val train_set = files_list_df.par.map(file => {
+			val completePath = file.getPath
+			val fileHandler = new File(completePath.toString)
+			println("Starting segmentation on file: " + fileHandler.getName)
+			val image_df = reader.readFile(fileHandler.getName)
 			val pp_tuple = PreprocessedImage.decodeImageDataFrame(reader.getSpark(), image_df)
 			pp_tuple
 		})
-		
+
 		val rows = train_set.map(item => {
 			item._1
 		})
@@ -42,12 +45,15 @@ object Main {
 		
 		val fitted = model.modelFit(df)
 		
-		val reader_test = new ReaderFromLocalStorage("./dataset/testino/test")
+		//val reader_test = new ReaderFromGoogleCloudStorage("test")
+		val reader_test = new ReaderFromSource(HadoopConfigurationBuilder.getRemoteSource, HadoopConfigurationBuilder.getHadoopConfigurationForGoogleCloudPlatform, "test")
 		
 		val test_files_list = reader_test.listDirectoryContents()
-		test_files_list.par.foreach(file => {
-			val image_df = reader_test.readFile(file.getName)
-			println("Starting segmentation on file: " + file.getName)
+		test_files_list.par.map(file => {
+			val completePath = file.getPath
+			val fileHandler = new File(completePath.toString)
+			val image_df = reader_test.readFile(fileHandler.getName)
+			println("Starting segmentation on file: " + fileHandler.getName)
 			
 			val pp_tuple = PreprocessedImage.decodeImageDataFrame(reader_test.getSpark(), image_df)
 			
@@ -55,9 +61,9 @@ object Main {
 			val pp_width = pp_tuple._2
 			val pp_height = pp_tuple._3
 			
-			println("Predicting image: " + file.getName)
+			println("Predicting image: " + fileHandler.getName)
 			val prediction = model.transformData(pp_image, fitted)
-			val image = model.getSegmentedImage(prediction, pp_width, pp_height)
+			val image: BufferedImage = model.getSegmentedImage(prediction, pp_width, pp_height)
 			
 			val centroids = prediction.groupBy("prediction").agg(
 				avg(col("r")).as("r"),
@@ -77,9 +83,9 @@ object Main {
 			def computeDistance(v1: Vector, v2: Vector): Double = {
 				math.sqrt(Vectors.sqdist(v1, v2))
 			}
-			
-			reader_test.saveImage(file.getName, image)
+			reader_test.saveImage(fileHandler.getName, image)
+			(fileHandler.getName, image: BufferedImage
+			)
 		})
-		
 	}
 }

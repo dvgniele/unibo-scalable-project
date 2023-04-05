@@ -1,7 +1,8 @@
-version: "2"
+version: "3.5"
 services:
   scala:
     container_name: scala
     build: ./
     volumes:
       - ./dataset:/br4ve-trave1er/dataset
+      #- ./config/helloworld-379211-1a6eefa37a81.json:/br4ve-trave1er/config/helloworld-379211-1a6eefa37a81.json

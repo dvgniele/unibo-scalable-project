@@ -15,8 +15,12 @@ FROM sbtscala/scala-sbt:eclipse-temurin-11.0.17_8_1.8.2_2.13.10
 #ENV PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
 #ENV HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
 
-RUN git clone -b unstable https://github.com/dvgniele/unibo-scalable-project.git /br4ve-trave1er
+#RUN git clone -b unstable https://github.com/dvgniele/unibo-scalable-project.git /br4ve-trave1er
 
+RUN mkdir /br4ve-trave1er
 WORKDIR /br4ve-trave1er
 
-ENTRYPOINT ["sbt", "run"]
+COPY ./target/scala-2.13/my-application.jar .
+
+ENTRYPOINT ["java", "-jar", "my-application.jar"]
+#ENTRYPOINT ["sbt", "run"]
