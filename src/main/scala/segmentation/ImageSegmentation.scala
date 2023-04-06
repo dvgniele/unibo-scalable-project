@@ -27,8 +27,11 @@ class ImageSegmentation(k: Int = 17) extends IImageSegmentation{
 		var colors: Map[Int, (Int, Int, Int)] = Map[Int, (Int, Int, Int)]()
 
 		for (i <- 0 until k) {
-			val s = data.filter(col("prediction") === i).rdd.first
-			colors += (i -> (s(2).asInstanceOf[Int], s(3).asInstanceOf[Int], s(4).asInstanceOf[Int]))
+			val cluster = data.filter(col("prediction") === i).rdd
+			if (!cluster.isEmpty) {
+				val s = cluster.first
+				colors += (i -> (s(2).asInstanceOf[Int], s(3).asInstanceOf[Int], s(4).asInstanceOf[Int]))
+			}
 		}
 
 		val img_array = data.select("w", "h", "prediction")
