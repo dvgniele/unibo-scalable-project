@@ -14,14 +14,15 @@ import java.io.File
 
 object Main {
 	def main(args: Array[String]): Unit = {
-		
-		//val reader = new ReaderFromGoogleCloudStorage("train")
-		val reader = new ReaderFromSource(HadoopConfigurationBuilder.getRemoteSource, HadoopConfigurationBuilder.getHadoopConfigurationForGoogleCloudPlatform, "train")
+		// start the timer
+		val startTime = System.currentTimeMillis()
+
+		val reader = new ReaderFromSource(HadoopConfigurationBuilder.getLocalSource, HadoopConfigurationBuilder.getHadoopConfigurationForLocalStorage, "train")
 		
 		//  reading all files in dataset directory
 		val files_list_df = reader.listDirectoryContents()
-		//val files_list_rdd = files_list_df.rdd
-		val k = 3
+
+		val k = 50
 		val model = new ImageSegmentation(k)
 		
 		val train_set = files_list_df.par.map(file => {
@@ -46,7 +47,7 @@ object Main {
 		val fitted = model.modelFit(df)
 		
 		//val reader_test = new ReaderFromGoogleCloudStorage("test")
-		val reader_test = new ReaderFromSource(HadoopConfigurationBuilder.getRemoteSource, HadoopConfigurationBuilder.getHadoopConfigurationForGoogleCloudPlatform, "test")
+		val reader_test = new ReaderFromSource(HadoopConfigurationBuilder.getLocalSource, HadoopConfigurationBuilder.getHadoopConfigurationForLocalStorage, "test")
 		
 		val test_files_list = reader_test.listDirectoryContents()
 		test_files_list.par.map(file => {
@@ -64,17 +65,27 @@ object Main {
 			println("Predicting image: " + fileHandler.getName)
 			val prediction = model.transformData(pp_image, fitted)
 			val image: BufferedImage = model.getSegmentedImage(prediction, pp_width, pp_height)
-			
+
+			val neutral = Vectors.dense(0.0, 0.0, 0.0)
+			val filledCentroids = Array.ofDim[Vector](k)
 			val centroids = prediction.groupBy("prediction").agg(
 				avg(col("r")).as("r"),
 				avg(col("g")).as("g"),
 				avg(col("b")).as("b")).collect().map(row => Vectors.dense(math.round(row.getDouble(1)), math.round(row.getDouble(2)), math.round(row.getDouble(3))))
+
+			for (i <- centroids.indices) {
+				filledCentroids(i) = centroids(i)
+			}
+			for (i <- centroids.length until k) {
+				filledCentroids(i) = neutral
+			}
+
 			val data =  prediction.select("r", "g", "b").rdd.map(row => Vectors.dense(row.getInt(0), row.getInt(1), row.getInt(2))).collect()
 			val clusterAssignments = prediction.select("prediction").rdd.map(_.getInt(0)).collect()
 			var sse = 0.0
 			for (i <- data.indices) {
 				val point = data(i)
-				val centroid = centroids(clusterAssignments(i))
+				val centroid = filledCentroids(clusterAssignments(i))
 				val distance = computeDistance(point, centroid)
 				sse += distance * distance
 			}
@@ -87,5 +98,15 @@ object Main {
 			(fileHandler.getName, image: BufferedImage
 			)
 		})
+
+		val endTime = System.currentTimeMillis()
+		val executionTime = endTime - startTime // convert to milliseconds
+
+		val hours = executionTime / (1000 * 60 * 60)
+		val minutes = (executionTime / (1000 * 60)) % 60
+		val seconds = (executionTime / 1000) % 60
+
+		println(s"Execution time: $executionTime ms")
+		println(s"Execution time: $hours hours $minutes minutes and $seconds s")
 	}
 }
