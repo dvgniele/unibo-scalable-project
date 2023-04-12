@@ -2,6 +2,7 @@ package org.br4ve.trave1er
 package segmentation
 
 import org.apache.spark.ml.clustering.{KMeans, KMeansModel}
+import org.apache.spark.ml.evaluation.ClusteringEvaluator
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.col
 
@@ -9,6 +10,8 @@ import java.awt.Color
 import java.awt.image.BufferedImage
 
 class ImageSegmentation(k: Int = 17) extends IImageSegmentation{
+	private val evaluator = new ClusteringEvaluator()
+
 	private val kmeans = new KMeans()
 		.setK(k)
 		.setSeed(1L)
@@ -21,6 +24,10 @@ class ImageSegmentation(k: Int = 17) extends IImageSegmentation{
 	def transformData(data: DataFrame, model: KMeansModel): DataFrame = {
 		model.transform(data)
 			.select("w", "h", "b", "g", "r", "features", "prediction")
+	}
+
+	def evaluate(data: DataFrame) = {
+		evaluator.evaluate(data)
 	}
 
 	def getSegmentedImage(data: DataFrame, width: Int, height: Int): BufferedImage = {
