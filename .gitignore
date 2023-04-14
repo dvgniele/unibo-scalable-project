@@ -45,3 +45,5 @@ build/
 /dataset/
 .idea/
 \.idea\codeStyles
+config/
+bkp/

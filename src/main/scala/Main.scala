@@ -22,7 +22,7 @@ object Main {
 		//  reading all files in dataset directory
 		val files_list_df = reader.listDirectoryContents()
 
-		val k = 50
+		val k = 2
 		val model = new ImageSegmentation(k)
 		
 		val train_set = files_list_df.par.map(file => {
