@@ -5,9 +5,12 @@
 * JDK 11
 * Scala plugin installed (2.13.8)
 * [Google SDK](https://cloud.google.com/sdk/docs/install)
+
+### Prerequisites for local execution
+
 * Hadoop 3.3.0 available at the following [link](https://liveunibo-my.sharepoint.com/:u:/g/personal/stefano_notari2_studio_unibo_it/EfnKa80vvUpElSofKFkpXCYBAmJp23vD6zxiJG8-69XR0w?e=siE2iT)
 
-### Hadoop Configuration
+#### Hadoop Configuration
 
 The complete procedure to install hadoop is available at the following [link](https://kontext.tech/article/447/install-hadoop-330-on-windows-10-step-by-step-guide).
 The most important things to do are the following:
@@ -17,26 +20,76 @@ The most important things to do are the following:
 * add the system variable HADOOP_HOME, the root directory of the folder without the bin subfolder (C:\Users\user\Documents\lib\hadoop-3.3.0\bin)
 * add the bin folder of hadoop to the path environment variable (C:\Users\user\Documents\lib\hadoop-3.3.0\bin)
 
-# How to deploy the application on Container Registry
+## Set up of Google Cloud Platform
 
-In order to run the application as a Job in google cloud you first need to build the Dockerfile.
+* Create a new project
+* Link a billing account to it
 
-In the root folder of the application run the following command (replacing the token {tag_image} with the desired tag)
+### Set up of Google Cloud Storage
 
-```docker build -t {tag_image} .```
+To set up a bucket use the following command, remember to set the bucket name and the project id
 
-After that you need to tag the created image with the address of google Cloud Registry, this can be done with the following command
+```
+gcloud storage buckets create gs://<BUCKET_NAME> --project=<PROJECT_ID> --default-storage-class=Standard --location=eu --uniform-bucket-level-access
+```
 
-```docker tag {tag_image} gcr.io/{Project_id}/{tag_image}:{tag_image_on_gcr}```
+After that, it is necessary to create a service account with the permission to read and write file to the bucket.
 
-Finally, it's possible to push the image with the command
+```
+gcloud iam service-accounts create <SA_NAME> --description="service account for Google Cloud Storage" --display-name="DISPLAY_NAME"
+```
 
-```docker push gcr.io/{Project_id}/{tag_image}:{tag_image_on_gcr}```
+Once created the new service account is possible to bind it with the project and add the permission to read/write on the bucket.
+```
+gcloud projects add-iam-policy-binding PROJECT_ID --member="serviceAccount:SA_NAME@PROJECT_ID.iam.gserviceaccount.com" --role="roles/storage.admin"
+```
 
-## Image Segmentation
+After that, it is possible to create the keyfile necessary to authenticate the account from the application
+```
+gcloud iam service-accounts keys create PATH_KEY_FILE\FILE_NAME.json --iam-account=SA_NAME@PROJECT_ID.iam.gserviceaccount.com
+```
+
+Finally, add the file to the `config` folder and remember to update the following variables in `src/main/scala/hadoopConfigurationBuilder/HadoopConfigurationBuilder.scala`:
+
+* line 8: the bucket name where the data are
+* line 12: the absolute path to the key file on the cluster
+* line 15: the id of project
+* line 16: the name of the bucket where the data are
+
+### set up of cluster with Dataproc
+
+The following command create a new cluster.
+
+```
+gcloud dataproc clusters create CLUSTER_NAME --enable-component-gateway --bucket BRAVE_BUCKET --region europe-west1 --zone europe-west1-b --single-node --master-machine-type n1-standard-2 --master-boot-disk-size 500 --image-version 2.1-debian11 --project PROJECT_ID
+```
+After the creation is possible to start the cluster
+
+```
+gcloud dataproc clusters start CLUSTER_NAME  --region=europe-west1
+```
+
+### last setup necessary to run a job on cluster
+
+Since the application needs to read/write file on the bucket, it needs the json file with the key for authentication.
+So it is necessary to copy the file on the cluster with the following command:
+```
+gcloud compute scp FILE_NAME.json CLUSTER-NAME-m:/ABS_PATH_TO_USR_FOLDER/config --zone=europe-west1-b
+```
+
+After that is necessary to upload the jar on the bucket.
+
+## START JOB
+
+```
+gcloud dataproc jobs submit spark --class org.br4ve.trave1er.Main --jars gs://BUCKET_NAME/my-application.jar --cluster CLUSTER_NAME --region europe-west1 \
+    --properties="spark.jars.packages=Microsoft:spark-images:0.1,spark.hadoop.google.cloud.auth.service.account.enable=true,spark.hadoop.google.cloud.auth.service.account.json.keyfile=/ABS_PATH_TO_USR_FOLDER/config/FILE_NAME.json,spark.hadoop.fs.gs.project.id=PROJECT_ID,spark.eventLog.enabled=false"
+```
 
 ## Contributors
 
 Stefano Notari
+
 Daniele Perrella
+
 Francesco Santilli
