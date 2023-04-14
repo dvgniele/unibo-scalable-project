@@ -17,7 +17,7 @@ object Main {
 		// start the timer
 		val startTime = System.currentTimeMillis()
 
-		val reader = new ReaderFromSource(HadoopConfigurationBuilder.getLocalSource, HadoopConfigurationBuilder.getHadoopConfigurationForLocalStorage, "train")
+		val reader = new ReaderFromSource(HadoopConfigurationBuilder.getRemoteSource, HadoopConfigurationBuilder.getHadoopConfigurationForGoogleCloudPlatform, "train")
 		
 		//  reading all files in dataset directory
 		val files_list_df = reader.listDirectoryContents()
@@ -47,7 +47,7 @@ object Main {
 		val fitted = model.modelFit(df)
 		
 		//val reader_test = new ReaderFromGoogleCloudStorage("test")
-		val reader_test = new ReaderFromSource(HadoopConfigurationBuilder.getLocalSource, HadoopConfigurationBuilder.getHadoopConfigurationForLocalStorage, "test")
+		val reader_test = new ReaderFromSource(HadoopConfigurationBuilder.getRemoteSource, HadoopConfigurationBuilder.getHadoopConfigurationForGoogleCloudPlatform, "test")
 		
 		val test_files_list = reader_test.listDirectoryContents()
 		val silhouette = Array.ofDim[Double](test_files_list.length)
