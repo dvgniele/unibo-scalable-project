@@ -7,8 +7,8 @@ echo Starting the script....
 ::set /p SA_NAME="Insert the name of service account: "
 
 set PROJECT_ID=helloworld-379211
-set CLUSTER_NAME=test2
-set BUCKET_NAME=brave-bucket-test
+set CLUSTER_NAME=brave-cluster-5k
+set BUCKET_NAME=brave-bucket
 set SA_NAME=servicetestscript
 
 echo Creating the bucket...
@@ -45,8 +45,8 @@ echo Creating the Cluster...
 
 set REGION=europe-west1
 set ZONE=europe-west1-b
-set CORES=6
-set MEMORY=32000
+set CORES=24
+set MEMORY=64000
 
 call gcloud dataproc clusters create %CLUSTER_NAME% --enable-component-gateway --bucket %BUCKET_NAME% --region %REGION% --zone %ZONE% --single-node --master-machine-type n1-custom-%CORES%-%MEMORY% --master-boot-disk-size 500 --image-version 2.1-debian11 --project %PROJECT_ID%
 
@@ -60,9 +60,11 @@ echo Uploading the jar and the key file on the bucket
 
 set JAR_NAME=my-application.jar
 set JAR_PATH=%FOLDER%/%JAR_NAME%
+set DATASET_PATH=%FOLDER%/dataset
 
 call gsutil cp %KEY_FILE% gs://%BUCKET_NAME%/
 call gsutil cp %JAR_PATH% gs://%BUCKET_NAME%/
+call gsutil -m cp -R %DATASET_PATH% gs://%BUCKET_NAME%/
 
 echo upload the dataset on the bucket
 
@@ -72,6 +74,6 @@ echo Starting the JOB
 
 set JAR_MAIN_CLASS=org.br4ve.trave1er.Main
 
-gcloud dataproc jobs submit spark --class %JAR_MAIN_CLASS% --jars gs://%BUCKET_NAME%/%JAR_NAME% --cluster %CLUSTER_NAME% --region %REGION% --properties="spark.jars.packages=Microsoft:spark-images:0.1,spark.hadoop.google.cloud.auth.service.account.enable=true,spark.hadoop.google.cloud.auth.service.account.json.keyfile=%CLUSTER_PATH%/%FILENAME%,spark.hadoop.fs.gs.project.id=%PROJECT_ID%,spark.eventLog.enabled=false"
+call gcloud dataproc jobs submit spark --class %JAR_MAIN_CLASS% --jars gs://%BUCKET_NAME%/%JAR_NAME% --cluster %CLUSTER_NAME% --region %REGION% --properties="spark.jars.packages=Microsoft:spark-images:0.1,spark.hadoop.google.cloud.auth.service.account.enable=true,spark.hadoop.google.cloud.auth.service.account.json.keyfile=%CLUSTER_PATH%/%FILENAME%,spark.hadoop.fs.gs.project.id=%PROJECT_ID%,spark.eventLog.enabled=false,spark.driver.memory=8g" --executor-memory 32g --driver-memory 32g
 
 PAUSE
