@@ -7,7 +7,7 @@ echo Starting the script....
 ::set /p SA_NAME="Insert the name of service account: "
 
 set PROJECT_ID=helloworld-379211
-set CLUSTER_NAME=brave-cluster-5k
+set CLUSTER_NAME=brave-cluster-1k
 set BUCKET_NAME=brave-bucket
 set SA_NAME=servicetestscript
 
@@ -74,6 +74,6 @@ echo Starting the JOB
 
 set JAR_MAIN_CLASS=org.br4ve.trave1er.Main
 
-call gcloud dataproc jobs submit spark --class %JAR_MAIN_CLASS% --jars gs://%BUCKET_NAME%/%JAR_NAME% --cluster %CLUSTER_NAME% --region %REGION% --properties="spark.jars.packages=Microsoft:spark-images:0.1,spark.hadoop.google.cloud.auth.service.account.enable=true,spark.hadoop.google.cloud.auth.service.account.json.keyfile=%CLUSTER_PATH%/%FILENAME%,spark.hadoop.fs.gs.project.id=%PROJECT_ID%,spark.eventLog.enabled=false,spark.driver.memory=8g" --executor-memory 32g --driver-memory 32g
+call gcloud dataproc jobs submit spark --class %JAR_MAIN_CLASS% --jars gs://%BUCKET_NAME%/%JAR_NAME% --cluster %CLUSTER_NAME% --region %REGION% --properties="spark.jars.packages=Microsoft:spark-images:0.1,spark.hadoop.google.cloud.auth.service.account.enable=true,spark.hadoop.google.cloud.auth.service.account.json.keyfile=%CLUSTER_PATH%/%FILENAME%,spark.hadoop.fs.gs.project.id=%PROJECT_ID%,spark.eventLog.enabled=false"
 
 PAUSE
