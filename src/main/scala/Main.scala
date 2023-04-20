@@ -5,6 +5,7 @@ import hadoopConfigurationBuilder.HadoopConfigurationBuilder
 import segmentation.ImageSegmentation
 import sparkreader.ReaderFromSource
 
+import org.apache.spark.ml.clustering.KMeansModel
 import org.apache.spark.ml.linalg.{Vector, Vectors}
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.functions.{avg, col}
@@ -22,7 +23,7 @@ object Main {
 		//  reading all files in dataset directory
 		val files_list_df = reader.listDirectoryContents()
 
-		val k = 50
+		val k = 2
 		val model = new ImageSegmentation(k)
 		
 		val train_set = files_list_df.par.map(file => {
@@ -38,7 +39,7 @@ object Main {
 			item._1
 		})
 		
-		val df = rows.reduce(_ unionAll _)
+		val df = rows.reduce(_ unionAll _).repartition(24)
 		
 		val properties = train_set.map { item =>
 			Row.fromTuple((item._2, item._3))
