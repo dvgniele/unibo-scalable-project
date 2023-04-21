@@ -17,12 +17,13 @@ object Main {
 		// start the timer
 		val startTime = System.currentTimeMillis()
 
-		val reader = new ReaderFromSource(HadoopConfigurationBuilder.getRemoteSource, HadoopConfigurationBuilder.getHadoopConfigurationForGoogleCloudPlatform, "train")
-		
+
+		val reader = new ReaderFromSource(HadoopConfigurationBuilder.getLocalSource, HadoopConfigurationBuilder.getHadoopConfigurationForLocalStorage, "train")
+
+		val k = 2
 		//  reading all files in dataset directory
 		val files_list_df = reader.listDirectoryContents()
 
-		val k = 2
 		val model = new ImageSegmentation(k)
 		
 		val train_set = files_list_df.par.map(file => {
@@ -38,7 +39,7 @@ object Main {
 			item._1
 		})
 		
-		val df = rows.reduce(_ unionAll _)
+		val df = rows.reduce(_ unionAll _).repartition(24)
 		
 		val properties = train_set.map { item =>
 			Row.fromTuple((item._2, item._3))
@@ -47,7 +48,7 @@ object Main {
 		val fitted = model.modelFit(df)
 		
 		//val reader_test = new ReaderFromGoogleCloudStorage("test")
-		val reader_test = new ReaderFromSource(HadoopConfigurationBuilder.getRemoteSource, HadoopConfigurationBuilder.getHadoopConfigurationForGoogleCloudPlatform, "test")
+		val reader_test = new ReaderFromSource(HadoopConfigurationBuilder.getLocalSource, HadoopConfigurationBuilder.getHadoopConfigurationForLocalStorage, "test")
 		
 		val test_files_list = reader_test.listDirectoryContents()
 		val silhouette = Array.ofDim[Double](test_files_list.length)

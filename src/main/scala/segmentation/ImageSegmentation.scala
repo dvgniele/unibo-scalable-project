@@ -1,7 +1,7 @@
 package org.br4ve.trave1er
 package segmentation
 
-import org.apache.spark.ml.clustering.{KMeans, KMeansModel}
+import org.apache.spark.ml.clustering.{BisectingKMeans, BisectingKMeansModel, KMeans, KMeansModel}
 import org.apache.spark.ml.evaluation.ClusteringEvaluator
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.functions.col
@@ -12,16 +12,16 @@ import java.awt.image.BufferedImage
 class ImageSegmentation(k: Int = 17) extends IImageSegmentation{
 	private val evaluator = new ClusteringEvaluator()
 
-	private val kmeans = new KMeans()
+	private val kmeans = new BisectingKMeans()
 		.setK(k)
 		.setSeed(1L)
 		.setFeaturesCol("features")
 
-	def modelFit(data: DataFrame): KMeansModel = {
+	def modelFit(data: DataFrame): BisectingKMeansModel = {
 		kmeans.fit(data)
 	}
 
-	def transformData(data: DataFrame, model: KMeansModel): DataFrame = {
+	def transformData(data: DataFrame, model: BisectingKMeansModel): DataFrame = {
 		model.transform(data)
 			.select("w", "h", "b", "g", "r", "features", "prediction")
 	}

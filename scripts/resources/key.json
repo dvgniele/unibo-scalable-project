@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "scala-unibo",
+  "private_key_id": "6932deff12a91c694b71208a34d9e89a483c1600",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCgqiJeAJt6eUh3\nrx29meFLuiWAavH3tXIdmrMtmFbRZZxZ/3eHgGM4rFLh/ZGFUZ41MxpFsMJrKGLB\nZpHwlTtMcpTaKxUZkDGm2MYOPHeDvvICz9vmdm7GHFQCh2YmRQGtggMEqpQ4ts+E\n0ZS/o/sonx3twUZTanpMeogorRWq6KRQxj2qI6Jt3B6NKpsSY5p0rTEblixDBGVa\n+ZkJFouID7c8jQvZ5podGchFo+Is8qSB/6OU5TQ62Q4sYLiY2dCHvvaRblgl8Oww\nJsqJw5zeVzZ/FODQfaSMOVJ0+pqNUF2AznuBtfb4NLtmFViUEgBgxHhivIcuuphI\n3I6ZuGfLAgMBAAECggEALJNnm5shiBZ0U7iDUOKLzp3j38BMSATQl4QfaGwW0lwV\nyCaH/FFTthqhmE/o+wtNEMeP53wGRQLce3pAzXYqEKjNwcYoQYJvNDJ6qOJ/6k6l\nCMCw6z06uL6NVHJKlh2ZPJGQ0s+c9itKYjhfw9f0TC3xeNCh+WzWZ7erZVW4aEVY\npIvlpbWD5Yd0T2yXD+5CyOBjJn0tF58twCrfBO84ztu4FC3LjIVieEUPL9WuwPY+\nqYLdZGmIIgHQgpuW7CP0siczbHNNMjkbho2mTkLeMjmOoDQt5kNbnEATM742dPPR\nw2eWHNFzJAK9qFDrgrBHWZd1iPhkk1vVPyaXLTzfOQKBgQDeeW7CjuCdP8y72OMe\n2dXa1bGfBNIICBvv6qIxvdvlfGzq+/ZHC7nPTzX8Jav+z3Y1zNaVVaYakdIYM/iu\nNzQ6UJmqpZLMFa/NVJPaZcEj09T/Y8QMWrDXf0BZpKR0fG//xjhbhbMSj1rK4tml\neeAA+777V3FdVK7o8NISqKt3dwKBgQC44DfQdZ57yBD29WywfT2y59qG09DGv3HZ\n7jMeesVRMI7VqJfJSso16KH1Bq8iG0lGO9Ve9WOARm6eKs7hfElCKWfsvM8l/y+u\nGmRzbewjDwur5WVFc+GyNRaaHtXtetFR0JZM+bj6RJXUXiQI/YFN+Mi8RGnZI8zb\nBHhEq2aPTQKBgQCMAUl1wOqTqyHRmWUc9iOCCvczxpnSmh/StQsLWJr46Xu1yYis\nHzH4x7WGj8KUocSXiOgFpJfaoqffuV0nbfA9Ppnl7Trbmk4/XpmJWH3aaSXi7sri\np3QguaEqiNVBxUnKYdj3p8UQygxuH6KuY2tX0xXWIKpj/LXyPBNH0MPPcwKBgEm4\nNulsDV9EfudLJCUYO8McSvpaejTWYDrLjhzITeg7Gam/CY+dwBZRBkvjd3B9OvHD\nqCiuZxfeffuaDFbDrZ6xThyLiXqYUFX3djjFC1VLiZbo6UIRnFzoaHPaeemxgMhE\nCbr2FTnOoYRGac4f8DC8VKcmDKMmcGihVqfjRQk9AoGAZerDOVBivsx1QY8iwGgG\nrMnIlxxyU7+m9oTJE95Mcf03Z0RgvlE10m1NiWb57kqIdSQbjOuaykUJS747pxaq\nkHxTL6DfEh4LSH2ceni92jcccBqNssWADIOpBRry3TTqPlLZx1+4En91FVsF9Gr8\nExGCoDzj+a4t4Ghcsz2cnKw=\n-----END PRIVATE KEY-----\n",
+  "client_email": "servicetestscript@scala-unibo.iam.gserviceaccount.com",
+  "client_id": "112505966566987040969",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/servicetestscript%40scala-unibo.iam.gserviceaccount.com"
+}

@@ -25,6 +25,24 @@ The most important things to do are the following:
 * Create a new project
 * Link a billing account to it
 
+### Automatically deploy the application through bat script
+
+We wrote a script to deploy automatically the application on the cloud, you can find it at `scripts/setupCloudEnvironment.bat`.
+Before executing it, you need to set:
+
+* PROJECT_ID
+* CLUSTER_NAME
+* BUCKET_NAME
+* SA_NAME (Service Account)
+
+Then, create a folder named `resources` inside the `scripts` folder and copy the fat jar of the application.
+
+Finally, move to the `scripts` folder and run the following command
+
+```
+./setupCloudEnvironment.bat
+```
+
 ### Set up of Google Cloud Storage
 
 To set up a bucket use the following command, remember to set the bucket name and the project id
@@ -61,7 +79,7 @@ Finally, add the file to the `config` folder and remember to update the followin
 The following command create a new cluster.
 
 ```
-gcloud dataproc clusters create CLUSTER_NAME --enable-component-gateway --bucket BRAVE_BUCKET --region europe-west1 --zone europe-west1-b --single-node --master-machine-type n1-standard-2 --master-boot-disk-size 500 --image-version 2.1-debian11 --project PROJECT_ID
+gcloud dataproc clusters create CLUSTER_NAME --enable-component-gateway --bucket BRAVE_BUCKET --region europe-west1 --zone europe-west1-b --single-node --master-machine-type n1-custom-CORES-MEMORY --master-boot-disk-size 500 --image-version 2.1-debian11 --project PROJECT_ID
 ```
 After the creation is possible to start the cluster
 
