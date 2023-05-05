@@ -1,5 +1,7 @@
 # Scalable Project 2022/23
 
+This repo is set up to run a demo on cloud.
+
 ## Prerequisites
 
 * JDK 11

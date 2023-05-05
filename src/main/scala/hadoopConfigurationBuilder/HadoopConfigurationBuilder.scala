@@ -3,11 +3,18 @@ package hadoopConfigurationBuilder
 
 import org.apache.hadoop.conf.Configuration
 
+/**
+ * this singleton provides the configuration object for hadoop, both for local and cloud
+ */
 object HadoopConfigurationBuilder {
 
   private val remoteSource = s"gs://brave-bucket/dataset";
   private val localSource = s"./dataset/dataset"
 
+  /**
+   *
+   * @return
+   */
   def getHadoopConfigurationForGoogleCloudPlatform: Configuration = {
     val jsonKeyFilePath = "/home/notty/key.json"
     val hadoopConfiguration = new Configuration()
@@ -22,12 +29,25 @@ object HadoopConfigurationBuilder {
     hadoopConfiguration
   }
 
+  /**
+   *
+   * @return
+   */
   def getHadoopConfigurationForLocalStorage: Configuration = {
     new Configuration()
   }
 
+  /**
+   *
+   * @return
+   */
+
   def getLocalSource: String = localSource
 
+  /**
+   *
+   * @return
+   */
   def getRemoteSource: String = remoteSource
 
 }
