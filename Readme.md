@@ -1,6 +1,9 @@
 # Scalable Project 2022/23
 
-This repo is set up to run a demo on cloud.
+Our project provides an implementation of color segmentation using kmeans algorithm on a dataset of images.
+
+The application can be run on either a cloud or a local machine.
+The following sections describe how to run it.
 
 ## Prerequisites
 
@@ -37,7 +40,7 @@ Before executing it, you need to set:
 * BUCKET_NAME
 * SA_NAME (Service Account)
 
-Then, create a folder named `resources` inside the `scripts` folder and copy the fat jar of the application.
+Then, create a folder named `resources` inside the `scripts` folder and copy the fat jar of the application and the dataset to upload.
 
 Finally, move to the `scripts` folder and run the following command
 
